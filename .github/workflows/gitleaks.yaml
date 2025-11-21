@@ -1,0 +1,32 @@
+name: Gitleaks Secret Scan
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # important! for full git history scanning
+
+      - name: Run Gitleaks
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: detect --source . --verbose --report-format=json --report-path=gitleaks-report.json
+
+      - name: Show report in logs
+        run: |
+          echo "===== GITLEAKS REPORT BEGIN ====="
+          cat gitleaks-report.json || echo "No report found"
+          echo "===== GITLEAKS REPORT END ====="
+
+      - name: Upload Gitleaks report
+        uses: actions/upload-artifact@v4
+        with:
+          name: gitleaks-report
+          path: gitleaks-report.json
