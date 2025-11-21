@@ -1,4 +1,4 @@
-name: TruffleHog Secret Scan
+name: TruffleHog Secrets Scanning
 
 # on:
 #   push:
@@ -12,10 +12,17 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run TruffleHog
+      # - name: Run TruffleHog
+      #   uses: trufflesecurity/trufflehog@main
+      #   with:
+      #     path: .
+      #     output: trufflehog-report.json
+      #     format: json
+      - name: Run TruffleHog (Git Mode)
         uses: trufflesecurity/trufflehog@main
         with:
-          path: .
+          scan: git
+          repo: .
           output: trufflehog-report.json
           format: json
 
