@@ -100,7 +100,12 @@ jobs:
         run: |
           echo "===== TRUFFLEHOG REPORT BEGIN ====="
           cat trufflehog-report.json
-          echo "===== TRUFFLEHOG REPORT END ====="
+          echo "===== TRUFFLEHOG REPORT END ====="   
+      - name: Print raw findings
+        run: cat trufflehog-report.json || true
+
+
+
 
       - name: Upload scan report
         uses: actions/upload-artifact@v4
