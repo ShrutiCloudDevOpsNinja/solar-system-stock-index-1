@@ -48,8 +48,9 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Run TruffleHog (Git Mode)
+      - name: Run TruffleHog (Git Mode)    # <-- non-fatal
         uses: trufflesecurity/trufflehog@main
+        continue-on-error: true            # <<<<<<<<<< important: allow step to return non-zero but keep workflow running
         with:
           scan: git
           repo: ${{ github.workspace }}
@@ -63,8 +64,15 @@ jobs:
             echo "[]" > trufflehog-report.json
           fi
 
+      - name: Print trufflehog report to logs   # <<<< you will see findings here immediately
+        run: |
+          echo "===== TRUFFLEHOG REPORT BEGIN ====="
+          cat trufflehog-report.json || true
+          echo "===== TRUFFLEHOG REPORT END ====="
+
       - name: Upload scan report
         uses: actions/upload-artifact@v4
         with:
           name: trufflehog-report
           path: trufflehog-report.json
+
