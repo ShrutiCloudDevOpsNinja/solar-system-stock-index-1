@@ -1,8 +1,5 @@
 name: TruffleHog Secrets Scanning
 
-# on:
-#   push:
-#   pull_request:
 on:
   workflow_dispatch:
 
@@ -10,19 +7,16 @@ jobs:
   trufflehog:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout full git history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # IMPORTANT
 
-      # - name: Run TruffleHog
-      #   uses: trufflesecurity/trufflehog@main
-      #   with:
-      #     path: .
-      #     output: trufflehog-report.json
-      #     format: json
       - name: Run TruffleHog (Git Mode)
         uses: trufflesecurity/trufflehog@main
         with:
           scan: git
-          repo: .
+          repo: ${{ github.workspace }}
           output: trufflehog-report.json
           format: json
 
