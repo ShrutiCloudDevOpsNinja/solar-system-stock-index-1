@@ -1,3 +1,39 @@
+# name: TruffleHog Secrets Scanning
+
+# on:
+#   workflow_dispatch:
+
+# jobs:
+#   trufflehog:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout full git history
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+
+#       - name: Run TruffleHog (Git Mode)
+#         uses: trufflesecurity/trufflehog@main
+#         with:
+#           scan: git
+#           repo: ${{ github.workspace }}
+#           output: trufflehog-report.json
+#           format: json
+#           no-update: true
+
+#       - name: Ensure report exists
+#         run: |
+#           if [ ! -f trufflehog-report.json ]; then
+#             echo "[]" > trufflehog-report.json
+#           fi
+
+#       - name: Upload scan report
+#         uses: actions/upload-artifact@v4
+#         with:
+#           name: trufflehog-report
+#           path: trufflehog-report.json
+
+
 name: TruffleHog Secrets Scanning
 
 on:
