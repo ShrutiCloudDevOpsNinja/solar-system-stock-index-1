@@ -1,0 +1,33 @@
+name: TruffleHog
+
+on:
+  workflow_dispatch:
+
+jobs:
+  trufflehog:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout full git history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Run TruffleHog (Git Mode)
+        uses: trufflesecurity/trufflehog@main
+        with:
+          scan: git
+          repo: .
+          output: trufflehog-report.json
+          format: json
+
+      - name: Print trufflehog report
+        run: |
+          echo "===== TRUFFLEHOG REPORT BEGIN ====="
+          cat trufflehog-report.json || true
+          echo "===== TRUFFLEHOG REPORT END ====="
+
+      - name: Upload scan report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trufflehog-report
+          path: trufflehog-report.json
