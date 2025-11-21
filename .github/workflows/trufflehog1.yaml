@@ -34,6 +34,50 @@
 #           path: trufflehog-report.json
 
 
+# name: TruffleHog Secrets Scanning
+
+# on:
+#   workflow_dispatch:
+
+# jobs:
+#   trufflehog:
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout full git history
+#         uses: actions/checkout@v4
+#         with:
+#           fetch-depth: 0
+
+#       - name: Run TruffleHog (Git Mode)    # <-- non-fatal
+#         uses: trufflesecurity/trufflehog@main
+#         continue-on-error: true            # <<<<<<<<<< important: allow step to return non-zero but keep workflow running
+#         with:
+#           scan: git
+#           repo: ${{ github.workspace }}
+#           output: trufflehog-report.json
+#           format: json
+#           no-update: true
+
+#       - name: Ensure report exists
+#         run: |
+#           if [ ! -f trufflehog-report.json ]; then
+#             echo "[]" > trufflehog-report.json
+#           fi
+
+#       - name: Print trufflehog report to logs   # <<<< you will see findings here immediately
+#         run: |
+#           echo "===== TRUFFLEHOG REPORT BEGIN ====="
+#           cat trufflehog-report.json || true
+#           echo "===== TRUFFLEHOG REPORT END ====="
+
+#       - name: Upload scan report
+#         uses: actions/upload-artifact@v4
+        # with:
+        #   name: trufflehog-report
+        #   path: trufflehog-report.json
+
+
+
 name: TruffleHog Secrets Scanning
 
 on:
@@ -43,31 +87,19 @@ jobs:
   trufflehog:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout full git history
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
 
-      - name: Run TruffleHog (Git Mode)    # <-- non-fatal
-        uses: trufflesecurity/trufflehog@main
-        continue-on-error: true            # <<<<<<<<<< important: allow step to return non-zero but keep workflow running
-        with:
-          scan: git
-          repo: ${{ github.workspace }}
-          output: trufflehog-report.json
-          format: json
-          no-update: true
+      - uses: actions/checkout@v4
 
-      - name: Ensure report exists
+      - name: Run TruffleHog (Git Mode)
         run: |
-          if [ ! -f trufflehog-report.json ]; then
-            echo "[]" > trufflehog-report.json
-          fi
+          docker run --rm -v "$PWD":/repo ghcr.io/trufflesecurity/trufflehog:latest git \
+            file:///repo \
+            --json > trufflehog-report.json || true
 
-      - name: Print trufflehog report to logs   # <<<< you will see findings here immediately
+      - name: Print trufflehog report
         run: |
           echo "===== TRUFFLEHOG REPORT BEGIN ====="
-          cat trufflehog-report.json || true
+          cat trufflehog-report.json
           echo "===== TRUFFLEHOG REPORT END ====="
 
       - name: Upload scan report
@@ -75,4 +107,5 @@ jobs:
         with:
           name: trufflehog-report
           path: trufflehog-report.json
+
 
