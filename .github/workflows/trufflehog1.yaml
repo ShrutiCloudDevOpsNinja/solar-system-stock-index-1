@@ -1,0 +1,30 @@
+name: TruffleHog Secret Scan
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  trufflehog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run TruffleHog
+        uses: trufflesecurity/trufflehog@main
+        with:
+          path: .
+          output: trufflehog-report.json
+          format: json
+
+      - name: Ensure report exists
+        run: |
+          if [ ! -f trufflehog-report.json ]; then
+            echo "[]" > trufflehog-report.json
+          fi
+
+      - name: Upload scan report
+        uses: actions/upload-artifact@v4
+        with:
+          name: trufflehog-report
+          path: trufflehog-report.json
