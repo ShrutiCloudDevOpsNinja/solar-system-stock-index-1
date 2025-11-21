@@ -1,0 +1,41 @@
+name: "CodeQL"
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    # The branches below must be a subset of the branches above
+    branches: [ main ]
+  schedule:
+    - cron: '0 2 * * *'   # optional: daily run at 02:00 UTC
+  workflow_dispatch:
+
+jobs:
+  analyze:
+    name: Analyze (CodeQL)
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Initialize CodeQL
+      uses: github/codeql-action/init@v2
+      with:
+        languages: java
+        # optional: customize queries
+        # queries: security-extended,experimental
+        # packs: <pack-identifier>
+
+    - name: Build the project (Maven)
+      run: |
+        sudo apt-get update
+        # if you need specific JDK:
+        # sudo apt-get install -y openjdk-17-jdk
+        mvn -B -DskipTests=false clean package
+
+    - name: Perform CodeQL Analysis
+      uses: github/codeql-action/analyze@v2
+      # no extra inputs needed unless you want SARIF upload options
