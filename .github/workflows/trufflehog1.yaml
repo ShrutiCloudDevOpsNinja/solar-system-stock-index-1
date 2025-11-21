@@ -10,7 +10,7 @@ jobs:
       - name: Checkout full git history
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0   # IMPORTANT
+          fetch-depth: 0
 
       - name: Run TruffleHog (Git Mode)
         uses: trufflesecurity/trufflehog@main
@@ -19,6 +19,7 @@ jobs:
           repo: ${{ github.workspace }}
           output: trufflehog-report.json
           format: json
+          no-update: true
 
       - name: Ensure report exists
         run: |
